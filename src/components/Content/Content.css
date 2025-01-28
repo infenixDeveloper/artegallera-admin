@@ -1,0 +1,13 @@
+.content__btn-menu {
+  color: white;
+  margin-top: 1rem;
+  margin-left: 2rem;
+  background-color: transparent;
+  border: none;
+}
+
+@media (width> 768px) {
+  .content__btn-menu {
+    display: none;
+  }
+}

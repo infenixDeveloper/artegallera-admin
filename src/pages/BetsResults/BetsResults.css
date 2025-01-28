@@ -1,0 +1,28 @@
+.results__container {
+  padding: 2rem;
+}
+
+.bets-table {
+  width: 100%;
+  margin-top: 20px;
+
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.bets-table__header {
+  color: aliceblue;
+}
+
+.bets-table__header th {
+  padding: 10px;
+}
+
+.bets-table tr {
+  color: aliceblue;
+  text-align: center;
+  border-bottom: 1px solid #ffffff2d;
+}
+.bets-table td {
+  padding: 10px 0;
+}

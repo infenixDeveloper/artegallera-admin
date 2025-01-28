@@ -1,0 +1,135 @@
+.table__container {
+  margin: 20px auto;
+  border-radius: 8px;
+}
+
+.table__nav {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 1rem;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 1rem;
+}
+
+.table__search {
+  position: relative;
+  display: flex;
+  height: 100%;
+}
+
+.table__search--input {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 59px;
+  padding: 0.5rem 1rem;
+  color: white;
+}
+
+.table__search--input:focus {
+  outline: none;
+}
+
+.table__search button {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  margin-right: 0.2rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.table__search--icon {
+  width: 100%;
+  height: 100%;
+}
+
+.table__content {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+.table__row {
+  border-bottom: 1px solid white;
+}
+
+.table__header {
+  width: 100%;
+  color: white;
+  background: linear-gradient(90deg, #bdbd02 0%, #575701 100%);
+}
+
+.table__cell {
+  padding: 12px;
+  text-align: center;
+  color: white;
+  font-size: 0.9rem;
+  border-left: 1px solid white;
+}
+
+.table__cell:nth-child(1) {
+  border-left: none;
+}
+
+.table__cell--header {
+  padding: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.table__cell--header:first-child {
+  border-top-left-radius: 30px;
+}
+
+.table__username {
+  font-weight: 700;
+}
+
+.table__cell--header:last-child {
+  border-top-right-radius: 30px;
+}
+
+.pagination__container {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 1rem;
+}
+
+.pagination__container span {
+  color: white;
+}
+
+.pagination__btn {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 2rem;
+  color: white;
+  padding: 0.5rem 0;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination__btn.active {
+  background-color: rgb(30, 30, 30);
+}
+
+@media (width > 768px) {
+  .table__search {
+    width: 300px;
+  }
+}

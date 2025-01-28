@@ -1,0 +1,51 @@
+.switch-wrapper {
+  display: inline-block;
+}
+
+.toggle-input {
+  display: none; /* Oculta el input */
+}
+
+.button {
+  display: inline-block;
+  width: 100px;
+  height: 25px;
+  background-color: #e03c3c; /* Color inicial (desactivado) */
+  border-radius: 50px;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  transition: background-color 0.25s ease-in-out;
+}
+
+.slider {
+  display: block;
+  font-size: 0.8rem;
+  position: relative;
+}
+
+.slider::after {
+  content: "OFF";
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: -2px;
+  left: 0;
+  display: grid;
+  place-content: center;
+  line-height: 0;
+  transition: background-color 0.25s, transform 0.25s ease-in;
+}
+
+.toggle-input:checked + .button {
+  background-color: #05ae3e; /* Cambia el color del botón */
+}
+
+.toggle-input:checked + .button .slider::after {
+  content: "ON";
+  transform: translateX(72px);
+}

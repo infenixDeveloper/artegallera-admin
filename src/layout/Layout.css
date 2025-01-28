@@ -1,0 +1,19 @@
+.layout__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 100vh;
+  place-content: center;
+  background: linear-gradient(180deg, #000000 0%, #1c1502 100%);
+}
+
+.layout__content {
+  min-height: 100dvh;
+  padding-inline: 1rem;
+  overflow-y: auto;
+}
+
+@media (width > 768px) {
+  .layout__container {
+    grid-template-columns: var(--sidebar-width) 1fr;
+  }
+}

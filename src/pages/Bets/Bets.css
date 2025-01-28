@@ -1,0 +1,220 @@
+.bets {
+  display: flex;
+  gap: 6rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 1rem;
+}
+
+.bets__container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.create-bet__container {
+  align-self: center;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  padding: 3rem;
+  border-radius: 20px;
+}
+
+.create-bet__container h2 {
+  background: linear-gradient(90deg, #bdbd02 0%, #202020 100%);
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.create-bet__container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.create-bet__date {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-bets__label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.create-bets__label input {
+  padding: 0.5rem;
+}
+
+.bets__btn-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bets__btn-panel h2 {
+  padding: 0 1rem;
+  font-size: 1.2rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #ffcc00 0%, #312f2f 100%);
+}
+
+.bets__btn-panel h3 {
+  position: relative;
+  color: white;
+  height: 48px;
+  border-radius: 102px;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.bets__btn-panel h3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 3px;
+  border-radius: 102px;
+  background: linear-gradient(90deg, #ffcc00 0%, #3f3f3f 100%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: destination-out;
+  mask-composite: exclude;
+}
+
+.bets__box-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.bets__box {
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.bets__box.red {
+  border: 2px solid #ff0000;
+}
+
+.bets__box.green {
+  border: 2px solid #00be06;
+}
+.bets__box.draw {
+  width: 100%;
+  border: 2px solid #fff;
+}
+
+.bets__box-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 30px;
+  color: white;
+}
+
+.bets__box-header.red {
+  background-color: #ff0000;
+}
+.bets__box-header.green {
+  background-color: #00be06;
+}
+.bets__box-header.draw {
+  background-color: #fff;
+  color: black;
+}
+
+.bets__box-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  padding: 1rem;
+}
+
+.bets__box-content span {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.bets__box-btn {
+  font-size: 1rem;
+  width: 100%;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.bets__box-btn.red {
+  background-color: #ff0000;
+}
+.bets__box-btn.green {
+  background-color: #00be06;
+}
+.bets__box-btn.draw {
+  background-color: #fff;
+  color: #202020;
+  padding-block: 0.1rem;
+}
+
+@media (768px < width < 992px) {
+  .bets__container {
+    gap: 4rem;
+  }
+
+  .create-bet__container {
+    width: 400px;
+  }
+
+  .create-bet__date {
+    flex-direction: row;
+  }
+
+  .bets__btn-panel h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (992px < width < 1280px) {
+  .bets__container {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .create-bet__container {
+    width: 400px;
+  }
+  .bets__box-container {
+    width: 100%;
+  }
+  .create-bet__date {
+    flex-direction: row;
+  }
+}
+
+@media (width > 1280px) {
+  .bets__container {
+    flex-direction: row;
+    gap: 4rem;
+  }
+  .create-bet__container {
+    width: 600px;
+  }
+
+  .create-bet__date {
+    flex-direction: row;
+  }
+}
