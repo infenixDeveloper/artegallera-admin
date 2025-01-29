@@ -10,6 +10,7 @@ import api from "@services/api";
 import Cookies from "js-cookie";
 import BetsTable from "./BetsTable";
 import "./BetsResults.css";
+import { fetchWinnersByEvent } from "@redux/slice/winnersSlice";
 
 const BetsResults = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,8 @@ const BetsResults = () => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [earnings, setEarnings] = useState({});
   const [totalBets, setTotalBets] = useState({});
+  const [totalBetting, setTotalBetting] = useState({});
+
 
   useEffect(() => {
     dispatch(getEvents());
@@ -127,6 +130,40 @@ const BetsResults = () => {
     fetchAllEarnings();
   }, [events]);
 
+  const fetchTotalBettings = async (id) => {
+    try {
+      const { data } = await api.get(`/winners/total-amount/${id}`);
+      return data.data;
+    } catch (error) {
+      console.error(error);
+      return { total_amount: 0 };
+    }
+  };
+
+  useEffect(() => {
+    const fetchTotalBetting = async () => {
+      const bettingMap = {};
+
+      for (const event of events?.events || []) {
+        try {
+          const data = await fetchTotalBettings(event.id);
+          console.log("EVENTO", data);
+
+          bettingMap[event.id] = data;
+        } catch (error) {
+          console.error("Error fetching total betting:", error);
+          bettingMap[event.id] = 0;
+
+        }
+      }
+      setTotalBetting(bettingMap);
+    };
+
+    fetchTotalBetting();
+  }, [events]);
+  console.log(totalBetting);
+
+
   const columns = [
     { field: "name", header: "Nombre" },
     { field: "date", header: "Fecha" },
@@ -135,8 +172,9 @@ const BetsResults = () => {
     { field: "totalAmount", header: "M. Total" },
     {
       field: "totalBalance",
-      header: "Saldo Total Apostado",
+      header: "Saldo Casado",
     },
+    { field: "totalBetting", header: "Saldo Total Apostado" },
     { field: "earnings", header: "Corretage" },
     {
       field: "actions",
@@ -158,8 +196,9 @@ const BetsResults = () => {
       location: event.location,
       time: formatTime(event.time),
       date: formatedDate(event.date),
-      totalAmount: totalAmount,
+      totalAmount: event.total_amount,
       totalBalance: totalBets[event.id] || 0,
+      totalBetting: totalBetting[event.id] || 0,
       earnings: earnings[event.id] || 0,
       actions: event,
     }));

@@ -28,7 +28,7 @@ const WithdrawBalance = ({ open, close, user, handleWithdrawBalance }) => {
         <ModalBody>
           <div className="balance__container">
             <span className="balance__title">
-              INGRESE EL MONTO QUE DESEA RECARGAR
+              INGRESE EL MONTO QUE DESEA RETIRAR
             </span>
             <div className="balance">
               <span className="balance__currency">$</span>

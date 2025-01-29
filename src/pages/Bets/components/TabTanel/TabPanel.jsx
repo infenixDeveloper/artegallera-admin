@@ -15,6 +15,11 @@ import { io } from "socket.io-client";
 import { useDispatch } from "react-redux";
 import { getLastEvent } from "@redux/slice/eventsSlice";
 import { fetchRoundsByEvent } from "@redux/slice/roundsSlice";
+import AppModal from "@components/Modal/Modal";
+import ModalHeader from "@components/Modal/ModalHeader";
+import ModalFooter from "@components/Modal/ModalFooter";
+import AppButton from "@components/Button/Button";
+
 
 const TabPanel = ({ children, value, index }) => {
   return (
@@ -31,6 +36,11 @@ const DynamicTabs = ({ idEvent }) => {
   const rounds = useSelector((state) => state.rounds.rounds);
   const [redBet, setRedBet] = useState(0);
   const [greenBet, setGreenBet] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState({
+    team: "",
+    id: null,
+  });
 
   const [value, setValue] = useState(0);
   const [isBettingActive, setIsBettingActive] = useState(null);
@@ -120,9 +130,10 @@ const DynamicTabs = ({ idEvent }) => {
     });
   }, [redBet, greenBet, isBettingActive]);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = async (event, newValue) => {
     setValue(newValue);
     setSelectedRoundId(rounds[newValue]?.id);
+
   };
 
   const createRound = () => {
@@ -140,6 +151,24 @@ const DynamicTabs = ({ idEvent }) => {
     });
   };
 
+  const handleOpenModal = (team, id) => {
+    if (isBettingActive) {
+      setSnackbarOpen(true);
+      return;
+    }
+    setOpenModal(true)
+    setSelectedOptions({ team, id })
+  }
+
+  const handleCloseModal = () => {
+    setOpenModal(false)
+    setSelectedOptions({ team: "", id: null })
+  }
+
+  const handleConfirmModal = () => {
+    handleWinner(selectedOptions.team, selectedOptions.id)
+  }
+
   const handleWinner = (team, id) => {
     if (isBettingActive) {
       setSnackbarOpen(true);
@@ -152,7 +181,12 @@ const DynamicTabs = ({ idEvent }) => {
       team,
     };
 
-    socket.current.emit("selectWinner", winner, (response) => {});
+    socket.current.emit("selectWinner", winner, (response) => {
+      if (response.success) {
+        setOpenModal(false)
+        dispatch(fetchRoundsByEvent(idEvent));
+      }
+    });
   };
 
   const handleCloseSnackbar = () => {
@@ -226,7 +260,7 @@ const DynamicTabs = ({ idEvent }) => {
             <Switch
               idEvent={idEvent}
               round={round.id}
-              // setIsBettingActive={setIsBettingActive}
+            // setIsBettingActive={setIsBettingActive}
             />
             <h3>SELECCIONA AL GANADOR</h3>
 
@@ -238,7 +272,8 @@ const DynamicTabs = ({ idEvent }) => {
                   <span>${redBet || 0}</span>
                   <button
                     className="bets__box-btn red"
-                    onClick={() => handleWinner("red", round?.id)}
+                    disabled={!!round.id_winner}
+                    onClick={() => handleOpenModal("red", round?.id)}
                   >
                     GANADOR
                   </button>
@@ -251,7 +286,8 @@ const DynamicTabs = ({ idEvent }) => {
                   <span>${greenBet || 0}</span>
                   <button
                     className="bets__box-btn green"
-                    onClick={() => handleWinner("green", round?.id)}
+                    disabled={!!round.id_winner}
+                    onClick={() => handleOpenModal("green", round?.id)}
                   >
                     GANADOR
                   </button>
@@ -262,7 +298,8 @@ const DynamicTabs = ({ idEvent }) => {
                 <div className="bets__box-content">
                   <button
                     className="bets__box-btn draw"
-                    onClick={() => handleWinner("draw", round?.id)}
+                    disabled={!!round.id_winner}
+                    onClick={() => handleOpenModal("draw", round?.id)}
                   >
                     TABLA
                   </button>
@@ -288,7 +325,21 @@ const DynamicTabs = ({ idEvent }) => {
           activas.
         </Alert>
       </Snackbar>
-    </Box>
+
+      <AppModal open={openModal} close={handleCloseModal}>
+        <ModalHeader>
+          <Typography variant="h4" color="white" align="center">
+            Esta seguro de selecionar al{" "}<Typography variant="h4" color={selectedOptions.team === "red" ? "red" : selectedOptions.team === "green" ? "green" : "white"}>
+              {selectedOptions.team === "red" ? "ROJO" : selectedOptions.team === "green" ? "VERDE" : "TABLA"}{" "}
+            </Typography> como ganador?
+          </Typography>
+        </ModalHeader>
+        <ModalFooter style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+          <AppButton variant="gradient" onClick={handleConfirmModal}>SI</AppButton>
+          <AppButton variant="gradient" onClick={handleCloseModal}> NO</AppButton>
+        </ModalFooter>
+      </AppModal>
+    </Box >
   );
 };
 
