@@ -122,7 +122,6 @@ const Users = () => {
         },
 
         (response) => {
-          console.log(response);
 
           if (response.success) {
             dispatch(fetchUsers());

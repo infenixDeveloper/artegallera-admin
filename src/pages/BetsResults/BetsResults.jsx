@@ -91,11 +91,10 @@ const BetsResults = () => {
     const token = Cookies.get("authToken");
 
     try {
-      const { data } = await api.get(`/betting/rounds/${row.actions.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const { data } = await api.get(`/betting/married/${row.actions.id_event}/${row.actions.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       if (data.success) {
         setBets(data.data);
       }
@@ -147,7 +146,6 @@ const BetsResults = () => {
       for (const event of events?.events || []) {
         try {
           const data = await fetchTotalBettings(event.id);
-          console.log("EVENTO", data);
 
           bettingMap[event.id] = data;
         } catch (error) {
@@ -161,7 +159,6 @@ const BetsResults = () => {
 
     fetchTotalBetting();
   }, [events]);
-  console.log(totalBetting);
 
 
   const columns = [
@@ -170,11 +167,11 @@ const BetsResults = () => {
     { field: "time", header: "Horario" },
     { field: "location", header: "Lugar" },
     { field: "totalAmount", header: "M. Total" },
+    { field: "totalBetting", header: "Saldo Total Apostado" },
     {
       field: "totalBalance",
       header: "Saldo Casado",
     },
-    { field: "totalBetting", header: "Saldo Total Apostado" },
     { field: "earnings", header: "Corretage" },
     {
       field: "actions",
@@ -282,13 +279,15 @@ const BetsResults = () => {
   ];
 
   const betsRows = bets
-    .filter((b) => b.status !== 2)
-    .map((bet) => {
-      return {
-        user: bet.user?.username,
-        amount: bet.amount,
-        team: bet.team === "red" ? "ROJO" : "VERDE",
-      };
+    .flatMap((bet) => {
+      return [
+        {
+          redUser: bet.bettingOne?.user?.username,
+          redAmount: bet.bettingOne?.amount,
+          greenUser: bet.bettingTwo?.user?.username,
+          greenAmount: bet.bettingTwo?.amount,
+        },
+      ];
     });
 
   return (
