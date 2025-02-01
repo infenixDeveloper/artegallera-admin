@@ -65,11 +65,12 @@ const DynamicTabs = ({ idEvent }) => {
     if (rounds?.length > 0) {
       setSelectedRoundId(rounds[0]?.id);
     }
-  }, [rounds]);
+  }, [idEvent]);
 
   useEffect(() => {
     socket.current.on("isBettingActive", (response) => {
       if (response.success) {
+
         response.data.id === selectedRoundId &&
           setIsBettingActive(response.data.is_betting_active);
 
@@ -92,7 +93,7 @@ const DynamicTabs = ({ idEvent }) => {
         }, 1000);
       }
     });
-  }, [isBettingActive]);
+  }, [isBettingActive, redBet, greenBet]);
 
   useEffect(() => {
     socket.current.emit(
@@ -112,13 +113,13 @@ const DynamicTabs = ({ idEvent }) => {
       }
     );
 
-    socket.current.on("isBettingActive", (response) => {
-      if (response.success) {
-        response.data.id === selectedRoundId &&
-          setIsBettingActive(response.data.is_betting_active);
-      }
-    });
-  }, [event, redBet, greenBet]);
+    // socket.current.on("isBettingActive", (response) => {
+    //   if (response.success) {
+    //     response.data.id === selectedRoundId &&
+    //       setIsBettingActive(response.data.is_betting_active);
+    //   }
+    // });
+  }, [event, redBet, greenBet, selectedRoundId]);
 
   useEffect(() => {
     socket.current.on("newBet", (newBet) => {
@@ -130,10 +131,27 @@ const DynamicTabs = ({ idEvent }) => {
     });
   }, [redBet, greenBet, isBettingActive]);
 
-  const handleChange = async (event, newValue) => {
+  const handleChange = async (value, newValue) => {
     setValue(newValue);
     setSelectedRoundId(rounds[newValue]?.id);
 
+    socket.current.emit(
+      "getRoundStatus",
+      { id: rounds[newValue]?.id, id_event: event?.id },
+      (response) => {
+        if (response.success) {
+          setIsBettingActive(
+            response.data?.round?.filter((r) => r.id === rounds[newValue]?.id)[0].is_betting_active
+          );
+
+        } else {
+          console.error(
+            "Error al obtener el estado del evento:",
+            response.message
+          );
+        }
+      }
+    );
   };
 
   const createRound = () => {

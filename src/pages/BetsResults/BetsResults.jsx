@@ -277,7 +277,6 @@ const BetsResults = () => {
     { field: "greenUser", header: "Usuario Verde" },
     { field: "greenAmount", header: "Apuesta" },
   ];
-  console.log(bets);
 
   const betsRows = bets
     .flatMap((bet) => {
