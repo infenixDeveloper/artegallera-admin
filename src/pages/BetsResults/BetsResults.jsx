@@ -277,14 +277,17 @@ const BetsResults = () => {
     { field: "greenUser", header: "Usuario Verde" },
     { field: "greenAmount", header: "Apuesta" },
   ];
+  console.log(bets);
 
   const betsRows = bets
     .flatMap((bet) => {
       return [
         {
           redUser: bet.bettingOne?.user?.username,
+          idRedBet: bet.id_betting_one,
           redAmount: bet.bettingOne?.amount,
           greenUser: bet.bettingTwo?.user?.username,
+          idgreebBet: bet.id_betting_two,
           greenAmount: bet.bettingTwo?.amount,
         },
       ];
