@@ -287,7 +287,7 @@ const BetsResults = () => {
           idRedBet: bet.id_betting_one,
           redAmount: bet.bettingOne?.amount,
           greenUser: bet.bettingTwo?.user?.username,
-          idgreebBet: bet.id_betting_two,
+          idGreenBet: bet.id_betting_two,
           greenAmount: bet.bettingTwo?.amount,
         },
       ];

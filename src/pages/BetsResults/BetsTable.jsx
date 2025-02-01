@@ -1,12 +1,16 @@
-import React, { useState, useRef } from "react";
+import AppButton from "@components/Button/Button";
+import React, { useState, useEffect } from "react";
+import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
+import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
 
 const BetsTable = ({ rows }) => {
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Referencias para almacenar el último usuario/apuesta entre páginas
-  const lastRedUserRef = useRef(null);
-  const lastRedAmountRef = useRef(null);
+  // **Reiniciar la página cuando cambian las filas**
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [rows]);
 
   // Calcular el índice inicial y final de los elementos en la página actual
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -19,10 +23,8 @@ const BetsTable = ({ rows }) => {
   const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
 
   // Manejar el cambio de página
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -37,43 +39,51 @@ const BetsTable = ({ rows }) => {
           </tr>
         </thead>
         <tbody>
-          {paginatedRows.map((row, index) => {
-            // Determinar si se debe mostrar el usuario rojo o no
-            const showRedUser =
-              row.idRedBet !== lastRedUserRef.current || row.redAmount !== lastRedAmountRef.current;
+          {(() => {
+            let lastRedUser = null;
 
-            if (showRedUser) {
-              lastRedUserRef.current = row.idRedBet;
-              lastRedAmountRef.current = row.redAmount;
-            }
+            return paginatedRows.map((row, index) => {
+              // Determinar si se debe mostrar el usuario rojo o no
+              const showRedUser = row.idRedBet !== lastRedUser;
+              if (showRedUser) {
+                lastRedUser = row.idRedBet;
+              }
 
-            return (
-              <tr key={index}>
-                <td>{showRedUser ? row.redUser : "-"}</td>
-                <td>{showRedUser ? row.redAmount : "-"}</td>
-                <td>{row.greenUser || "-"}</td>
-                <td>{row.greenAmount || "-"}</td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={index}>
+                  <td>{showRedUser ? row.redUser : "-"}</td>
+                  <td>{showRedUser ? row.redAmount : "-"}</td>
+                  <td>{row.greenUser || "-"}</td>
+                  <td>{row.greenAmount || "-"}</td>
+                </tr>
+              );
+            });
+          })()}
         </tbody>
       </table>
-      <div style={{ marginTop: "10px", textAlign: "center" }}>
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
+      <div className="pagination__container">
+        <AppButton
+          onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Anterior
-        </button>
-        <span style={{ margin: "0 10px" }}>
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
+          <KeyboardArrowLeftOutlinedIcon sx={{ color: "white" }} />
+        </AppButton>
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            className={`pagination__btn ${currentPage === index + 1 ? "active" : ""
+              }`}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <AppButton
+          onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          Siguiente
-        </button>
+          <KeyboardArrowRightOutlinedIcon sx={{ color: "white" }} />
+        </AppButton>
       </div>
     </>
   );
