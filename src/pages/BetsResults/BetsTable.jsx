@@ -49,12 +49,24 @@ const BetsTable = ({ rows }) => {
                 lastRedUser = row.idRedBet;
               }
 
+              // Condicionar el renderizado de las celdas según el equipo
               return (
                 <tr key={index}>
-                  <td>{showRedUser ? row.redUser : "-"}</td>
-                  <td>{showRedUser ? row.redAmount : "-"}</td>
-                  <td>{row.greenUser || "-"}</td>
-                  <td>{row.greenAmount || "-"}</td>
+                  {row.team1 === "red" ? (
+                    <>
+                      <td>{showRedUser ? row.redUser : "-"}</td>
+                      <td>{showRedUser ? row.redAmount : "-"}</td>
+                      <td>{row.greenUser || "-"}</td>
+                      <td>{row.greenAmount || "-"}</td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{row.greenUser || "-"}</td>
+                      <td>{row.greenAmount || "-"}</td>
+                      <td>{showRedUser ? row.redUser : "-"}</td>
+                      <td>{showRedUser ? row.redAmount : "-"}</td>
+                    </>
+                  )}
                 </tr>
               );
             });

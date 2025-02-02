@@ -288,9 +288,13 @@ const BetsResults = () => {
           greenUser: bet.bettingTwo?.user?.username,
           idGreenBet: bet.id_betting_two,
           greenAmount: bet.bettingTwo?.amount,
+          team1: bet.bettingOne.team,
         },
       ];
     });
+
+  console.log(betsRows);
+
 
   return (
     <div className="results__container">
