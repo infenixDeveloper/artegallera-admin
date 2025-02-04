@@ -65,7 +65,7 @@ const DynamicTabs = ({ idEvent }) => {
     if (rounds?.length > 0) {
       setSelectedRoundId(rounds[0]?.id);
     }
-  }, [idEvent]);
+  }, [rounds]);
 
   useEffect(() => {
     socket.current.on("isBettingActive", (response) => {
