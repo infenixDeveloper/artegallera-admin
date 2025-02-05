@@ -62,11 +62,10 @@ const DynamicTabs = ({ idEvent }) => {
   }, [idEvent, dispatch]);
 
   useEffect(() => {
-    if (rounds?.length > 0) {
+    if (rounds?.length > 0 && selectedRoundId === null) {
       setSelectedRoundId(rounds[0]?.id);
     }
   }, [rounds]);
-
   useEffect(() => {
     socket.current.on("isBettingActive", (response) => {
       if (response.success) {
@@ -202,7 +201,7 @@ const DynamicTabs = ({ idEvent }) => {
     socket.current.emit("selectWinner", winner, (response) => {
       if (response.success) {
         setOpenModal(false)
-        // dispatch(fetchRoundsByEvent(idEvent));
+        dispatch(fetchRoundsByEvent(idEvent));
       }
     });
   };
