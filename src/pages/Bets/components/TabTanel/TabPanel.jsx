@@ -202,7 +202,7 @@ const DynamicTabs = ({ idEvent }) => {
     socket.current.emit("selectWinner", winner, (response) => {
       if (response.success) {
         setOpenModal(false)
-        dispatch(fetchRoundsByEvent(idEvent));
+        // dispatch(fetchRoundsByEvent(idEvent));
       }
     });
   };
