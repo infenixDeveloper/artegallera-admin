@@ -49,3 +49,15 @@
   content: "ON";
   transform: translateX(72px);
 }
+/* Estilo para la botonera mientras está cargando */
+.button.loading {
+  background-color: #d3d3d3; /* Gris claro */
+  cursor: not-allowed; /* Cambia el cursor a no permitido */
+}
+
+/* Estilo para el texto de carga */
+.loading-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}

@@ -28,7 +28,8 @@ const Videos = () => {
   const [video, setVideo] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoName, setVideoName] = useState(""); // Estado para el nombre del video
-  const [isEventVideo, setIsEventVideo] = useState(false); // Estado para el checkbox
+  const [isEventVideo, setIsEventVideo] = useState(false); // Estado para el checkbox de event
+  const [isMovilVideo, setIsMovilVideo] = useState(false); // Estado para el checkbox de version movil
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -62,6 +63,7 @@ const Videos = () => {
     formData.append("video", video);
     formData.append("name", videoName.trim());
     formData.append("is_event_video", isEventVideo); // Añadir el valor del checkbox
+    formData.append("is_movil_video", isMovilVideo); // Añadir el valor del checkbox
 
     setLoading(true);
 
@@ -224,6 +226,17 @@ const Videos = () => {
                 />
               }
               label="¿Es un video de presentación?"
+              sx={{ color: "white", mb: 2 }}
+            />
+             <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isMovilVideo}
+                  onChange={(e) => setIsMovilVideo(e.target.checked)}
+                  sx={{ color: "white" }}
+                />
+              }
+              label="¿Es video para movil?"
               sx={{ color: "white", mb: 2 }}
             />
             <Button

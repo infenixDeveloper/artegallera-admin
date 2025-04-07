@@ -11,10 +11,47 @@ import Cookies from "js-cookie";
 import BetsTable from "./BetsTable";
 import "./BetsResults.css";
 import { fetchWinnersByEvent } from "@redux/slice/winnersSlice";
+function transformAndSortBets(bets) {
+  let seenRedBets = new Set();
+  let seenGreenBets = new Set();
 
+  // Agrupar por idRedBet para ordenar correctamente
+  let groupedBets = bets.reduce((acc, bet) => {
+      if (!acc[bet.idRedBet]) {
+          acc[bet.idRedBet] = [];
+      }
+      acc[bet.idRedBet].push(bet);
+      return acc;
+  }, {});
+
+  let sortedBets = Object.values(groupedBets).flat(); // Convierte el objeto en un array ordenado
+
+  return sortedBets.map((bet, index) => {
+      let newBet = { ...bet };
+
+      // Si el idRedBet ya se ha visto, reemplaza redUser y redAmount con "-"
+      if (seenRedBets.has(bet.idRedBet)) {
+          newBet.redUser = "-";
+          newBet.redAmount = "-";
+      } else {
+          seenRedBets.add(bet.idRedBet);
+      }
+
+      // Si el idGreenBet ya se ha visto, reemplaza greenUser y greenAmount con "-"
+      if (seenGreenBets.has(bet.idGreenBet)) {
+          newBet.greenUser = "-";
+          newBet.greenAmount = "-";
+      } else {
+          seenGreenBets.add(bet.idGreenBet);
+      }
+
+      return newBet;
+  });
+}
 const BetsResults = () => {
   const dispatch = useDispatch();
   const events = useSelector((state) => state.results);
+  console.log("Eventos:", events);
   // const rounds = useSelector((state) => state.rounds.rounds);
 
   const [openModal, setOpenModal] = useState(false);
@@ -37,6 +74,8 @@ const BetsResults = () => {
       try {
         const { data } = await api.get("/user/total-amount");
         setTotalAmount(data.total);
+        // imprimir en consola el total de usuarios
+        console.log("Total de usuarios:", data.total);
       } catch (error) {
         console.error(error);
       }
@@ -168,10 +207,7 @@ const BetsResults = () => {
     { field: "location", header: "Lugar" },
     { field: "totalAmount", header: "M. Total" },
     { field: "totalBetting", header: "Saldo Total Apostado" },
-    {
-      field: "totalBalance",
-      header: "Saldo Casado",
-    },
+    { field: "totalBalance", header: "Saldo Casado" },
     { field: "earnings", header: "Corretage" },
     {
       field: "actions",
@@ -185,7 +221,7 @@ const BetsResults = () => {
       },
     },
   ];
-
+  
   const rows = [...(events?.events || [])]
     ?.sort((a, b) => b.id - a.id)
     ?.map((event) => ({
@@ -199,7 +235,7 @@ const BetsResults = () => {
       earnings: earnings[event.id] || 0,
       actions: event,
     }));
-
+  console.log("Detalle por evento:", rows);
   const roundsColumns = [
     { field: "round", header: "Pelea" },
     { field: "result", header: "Resultado" },
@@ -308,7 +344,8 @@ const BetsResults = () => {
       </AppModal>
 
       <AppModal open={openBets} close={() => setOpenBets(false)}>
-        <BetsTable columns={betsColumns} rows={betsRows} />
+
+        <BetsTable columns={betsColumns} rows={transformAndSortBets(betsRows)} />
       </AppModal>
     </div>
   );

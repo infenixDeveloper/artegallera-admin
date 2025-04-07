@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.MODE === 'production'
+const baseURL = import.meta.env.MODE === 'production' 
   ? import.meta.env.VITE_API_URL_PROD
   : import.meta.env.VITE_API_URL_DEV;
 
-// const baseURL = "https://api.artegallera.com"
+// const baseURL = "http://localhost:3002"
 // const baseURL = "https://artegallera.infenix.com/api"
 
 const api = axios.create({

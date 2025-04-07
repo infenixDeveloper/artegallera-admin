@@ -1,4 +1,4 @@
-.table__container {
+/* .table__container {
   margin: 20px auto;
   border-radius: 8px;
 }
@@ -131,5 +131,163 @@
 @media (width > 768px) {
   .table__search {
     width: 300px;
+  }
+}
+
+
+
+ */
+.table__container {
+  margin: 20px auto;
+  border-radius: 8px;
+}
+
+.table__nav {
+  display: flex;
+  align-items: center;
+  justify-content: end; /* Alinea los elementos al inicio */
+  gap: 1rem;
+  width: 100%;
+  height: 90px;
+  margin-bottom: 1rem;
+  overflow-x: auto; /* Habilita el desplazamiento horizontal si los elementos exceden el ancho */
+  white-space: nowrap; /* Asegura que los elementos no se rompan a una nueva línea */
+}
+
+.table__search {
+  position: relative;
+  display: flex;
+  height: 100%;
+}
+
+.table__search--input {
+  width: 100%;
+  height: 55px;
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 59px;
+  padding: 0.5rem 1rem;
+  color: white;
+  margin-top: 10px;
+}
+
+.table__search--input:focus {
+  outline: none;
+}
+
+.table__search button {
+  position: absolute;
+  top: 41%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  margin-right: 0.2rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.table__search--icon {
+  width: 100%;
+  height: 100%;
+}
+
+.table__content {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+.table__row {
+  border-bottom: 1px solid white;
+}
+
+.table__header {
+  width: 100%;
+  color: white;
+  background: linear-gradient(90deg, #bdbd02 0%, #575701 100%);
+}
+
+.table__cell {
+  padding: 12px;
+  text-align: center;
+  color: white;
+  font-size: 0.9rem;
+  border-left: 1px solid white;
+}
+
+.table__cell:nth-child(1) {
+  border-left: none;
+}
+
+.table__cell--header {
+  padding: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.table__cell--header:first-child {
+  border-top-left-radius: 30px;
+}
+
+.table__username {
+  font-weight: 700;
+}
+
+.table__cell--header:last-child {
+  border-top-right-radius: 30px;
+}
+
+.pagination__container {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 1rem;
+}
+
+.pagination__container span {
+  color: white;
+}
+
+.pagination__btn {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 2rem;
+  color: white;
+  padding: 0.5rem 0;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination__btn.active {
+  background-color: rgb(30, 30, 30);
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .table__nav {
+    flex-direction: row; /* Asegura que los botones sigan en fila */
+
+    justify-content: start; /* Alinea los elementos al inicio */
+  }
+
+  .table__search {
+    width: auto; /* Los elementos se ajustan en función del espacio disponible */
+  }
+
+  .table__search--input {
+    width: auto; /* Evita que el input ocupe todo el ancho disponible */
+  }
+
+  .pagination__container {
+    flex-direction: row; /* Los botones de paginación se mantienen en fila */
+    gap: 0.5rem;
   }
 }

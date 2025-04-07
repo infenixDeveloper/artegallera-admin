@@ -30,6 +30,7 @@ import WithdrawBalance from "./WithdrawBalance";
 import ChangePassword from "./ChangePassword";
 import { useRef } from "react";
 import { io } from "socket.io-client";
+import * as XLSX from 'xlsx';
 
 const Users = () => {
   const socket = useRef(null);
@@ -71,7 +72,6 @@ const Users = () => {
 
   useEffect(() => {
     const usersRows = Array.from(users || [])
-      .filter((u) => u.is_active)
       .sort((a, b) => b.id - a.id)
       .map((user) => ({
         id: user.id,
@@ -175,6 +175,47 @@ const Users = () => {
     },
   ];
 
+  const exportToExcel = () => {
+    try {
+      // Preparamos los datos
+      const excelData = rows.map(row => ({
+        ID: row.id,
+        Usuario: row.user,
+        Nombre: `${row.name} ${row.lastname}`,
+        Email: row.email,
+        Saldo: row.balance,
+        Estado: row.status
+      }));
+
+      if (excelData.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+
+      // Crear hoja de trabajo
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      
+      // Ajustar el ancho de las columnas
+      const wscols = [
+        { wch: 5 },  // ID
+        { wch: 15 }, // Usuario
+        { wch: 20 }, // Nombre
+        { wch: 25 }, // Email
+        { wch: 10 }, // Saldo
+        { wch: 10 }  // Estado
+      ];
+      ws['!cols'] = wscols;
+      
+      // Crear libro y exportar
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Usuarios");
+      XLSX.writeFile(wb, `usuarios_${new Date().toISOString().slice(0,10)}.xlsx`);
+      
+    } catch (error) {
+      console.error('Error al exportar a Excel:', error);
+      alert('Ocurrió un error al exportar los datos');
+    }
+  };
   return (
     <>
       <div className="users__container">
@@ -186,19 +227,41 @@ const Users = () => {
           columns={columns}
           rows={rows}
           AddButton={
-            <AppButton
-              variant="gradient"
-              onClick={handleOpenAddUser}
-              sx={{
-                width: { md: "200px", sm: "200px" },
-                fontSize: {
-                  xs: ".7rem",
-                  sm: "1rem",
-                },
-              }}
-            >
-              Crear Usuario +
-            </AppButton>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <AppButton
+                variant="gradient"
+                onClick={exportToExcel}
+                sx={{
+                  width: { md: "200px", sm: "200px" },
+                  minWidth: "200px",
+                  minHeight: "55px",
+                  fontSize: {
+                    xs: ".7rem",
+                    sm: "1rem",
+                  },
+                  fontWeight: "bold",
+                }}
+              >
+                Exportar
+              </AppButton>
+              <AppButton
+                variant="gradient"
+                onClick={handleOpenAddUser}
+                sx={{
+                  width: { md: "200px", sm: "200px" },
+                  minWidth: "200px",
+                  minHeight: "55px",
+                  fontSize: {
+                    xs: ".7rem",
+                    sm: "1rem",
+                  },
+                  fontWeight: "bold",
+                }}
+              >
+                Crear Usuario +
+              </AppButton>
+              
+            </div>
           }
         />
 

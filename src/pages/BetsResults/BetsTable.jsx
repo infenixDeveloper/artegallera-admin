@@ -4,6 +4,8 @@ import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeft
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
 
 const BetsTable = ({ rows }) => {
+  console.log(rows,"este");
+  
   const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -41,8 +43,11 @@ const BetsTable = ({ rows }) => {
         <tbody>
           {(() => {
             let lastRedUser = null;
+            console.log(paginatedRows);
 
             return paginatedRows.map((row, index) => {
+              // console.log({row});
+
               // Determinar si se debe mostrar el usuario rojo o no
               const showRedUser = row.idRedBet !== lastRedUser;
               if (showRedUser) {
@@ -83,8 +88,9 @@ const BetsTable = ({ rows }) => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`pagination__btn ${currentPage === index + 1 ? "active" : ""
-              }`}
+            className={`pagination__btn ${
+              currentPage === index + 1 ? "active" : ""
+            }`}
             onClick={() => paginate(index + 1)}
           >
             {index + 1}

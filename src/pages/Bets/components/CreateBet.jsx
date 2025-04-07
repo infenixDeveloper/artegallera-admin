@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import AppButton from "@components/Button/Button";
 import api from "@services/api";
 import Cookies from "js-cookie";
-import { Button, ButtonGroup, IconButton, Snackbar } from "@mui/material";
+import { Alert, Button, ButtonGroup, IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
@@ -43,6 +43,9 @@ const CreateBet = () => {
     horizontal: "center",
     bgColor: "",
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpenText, setSnackbarOpenText] = useState("");
+
   const { vertical, horizontal } = snackbar;
 
   const [view, setView] = useState("form");
@@ -80,7 +83,7 @@ const CreateBet = () => {
         },
       });
 
-      if (response.data.success) {
+      if (response.data?.success) {
         socket.current.emit(
           "createRound",
           { id_event: response.data.data.id },
@@ -104,6 +107,12 @@ const CreateBet = () => {
           message: "Evento creado con éxito",
           bgColor: "#5cb85c",
         });
+      }else{
+        // console.log(response.data);
+        
+        // alert(`${response.data.message}`)
+        setSnackbarOpenText(response.data.message)
+        setSnackbarOpen(true)
       }
     } catch (error) {
       console.error(error);
@@ -118,6 +127,9 @@ const CreateBet = () => {
 
   const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
+  };
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   const action = (
@@ -201,6 +213,20 @@ const CreateBet = () => {
           },
         }}
       />
+       <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
+         {snackbarOpenText}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

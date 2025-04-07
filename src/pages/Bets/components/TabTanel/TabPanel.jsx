@@ -163,6 +163,7 @@ const DynamicTabs = ({ idEvent }) => {
           setSelectedRoundId(updatedRounds[lastIndex]?.id);
         });
       } else {
+        console.error(response)
         console.error("Failed to create round:", response.message);
       }
     });

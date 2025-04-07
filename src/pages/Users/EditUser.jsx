@@ -108,6 +108,20 @@ const EditUser = ({ open, close, user, onSave }) => {
                 />
               </label>
             </div>
+            <div className="users__form--groups">
+              <label className="users__form--label">
+                Estatus
+                <select
+                  className="users__form--select"
+                  name="is_active"
+                  value={formData.is_active}
+                  onChange={handleFormChange}
+                >
+                  <option value={true}>Activo</option>
+                  <option value={false}>Inactivo</option>
+                </select>
+              </label>
+            </div>
             <div className="users__form--btn-group">
               <button type="submit" className="users__form--btn">
                 Guardar

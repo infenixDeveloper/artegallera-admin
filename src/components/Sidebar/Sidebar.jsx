@@ -8,6 +8,7 @@ import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import SensorsIcon from "@mui/icons-material/Sensors";
 import PersonIcon from "@mui/icons-material/Person";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -29,6 +30,11 @@ const Sidebar = () => {
       name: "Usuarios",
       path: "/admin/usuarios",
       icon: <PersonIcon />,
+    },
+    {
+      name: "Transacciones",
+      path: "/admin/transacciones",
+      icon: <AccountBalanceWalletIcon />,
     },
     {
       name: "Videos",
