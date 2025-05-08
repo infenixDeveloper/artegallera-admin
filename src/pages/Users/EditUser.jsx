@@ -18,122 +18,153 @@ const EditUser = ({ open, close, user, onSave }) => {
     last_name: "",
     username: "",
     email: "",
-    is_active: true,
+    password: "",
+    status: "Inactivo", // Valor por defecto
   });
+
+  // Función para convertir status a booleano
+  const statusToBoolean = (status) => status === "Activo";
+  
+  // Función para convertir booleano a status
+  const booleanToStatus = (isActive) => isActive ? "Activo" : "Inactivo";
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData(() => {
-      return {
-        ...formData,
-        [name]: value,
-      };
-    });
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.put("/user", formData);
+      const payload = {
+        ...formData,
+        // Convertimos el status a booleano para la API
+        is_active: statusToBoolean(formData.status)
+      };
+      
+      const { data } = await api.put("/user", payload);
+      
       if (data.success) {
         dispatch(fetchUsers());
         close(false);
+        if (onSave) onSave();
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error updating user:", error);
+      // Aquí podrías agregar manejo de errores para el usuario
     }
   };
 
   useEffect(() => {
-    setFormData({
-      id: user.id,
-      first_name: user.name,
-      last_name: user.lastname,
-      username: user.user,
-      email: user.email || "",
-    });
-  }, [user]);
+    if (user && open) {
+      console.log("user", user);
+      setFormData({
+        id: user.id,
+        first_name: user.name || user.first_name || "",
+        last_name: user.lastname || user.last_name || "",
+        username: user.user || user.username || "",
+        email: user.email || "",
+        password: user.password || "",
+        passwordshow: user.passwordshow || "",
+        // Convertimos el estado del usuario a nuestro formato de status
+        status: user.status || booleanToStatus(user.is_active)
+      });
+    }
+  }, [user, open]);
+
+  if (!open) return null;
 
   return (
-    <>
-      <Modal open={open} close={close}>
-        <ModalHeader>
-          <Typography sx={{ color: "white", fontSize: "2rem", mb: "1rem" }}>
-            Editar
-          </Typography>
-        </ModalHeader>
-        <ModalBody>
-          <form className="users__form" onSubmit={handleSubmit}>
+    <Modal open={open} close={close}>
+      <ModalHeader>
+        <Typography sx={{ color: "white", fontSize: "2rem", mb: "1rem" }}>
+          Editar Usuario
+        </Typography>
+      </ModalHeader>
+      <ModalBody>
+        <form className="users__form" onSubmit={handleSubmit}>
+          <label className="users__form--label">
+            NOMBRE
+            <input
+              type="text"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleFormChange}
+              required
+            />
+          </label>
+
+          <label className="users__form--label">
+            APELLIDO
+            <input
+              type="text"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleFormChange}
+              required
+            />
+          </label>
+
+          <div className="users__form--groups">
             <label className="users__form--label">
-              NOMBRE
+              USUARIO
               <input
                 type="text"
-                name="first_name"
-                value={formData.first_name}
+                name="username"
+                value={formData.username}
                 onChange={handleFormChange}
+                required
               />
             </label>
+          </div>
 
+          <div className="users__form--groups">
             <label className="users__form--label">
-              APELLIDO
+              CORREO ELECTRÓNICO
               <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleFormChange}
+                required
               />
             </label>
-
-            <div className="users__form--groups">
-              <label className="users__form--label">
-                USUARIO
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </div>
-
-            <div className="users__form--groups">
-              <label className="users__form--label">
-                CORREO ELECTR&Oacute;NICO
-                <input
-                  type="text"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFormChange}
-                />
-              </label>
-            </div>
-            <div className="users__form--groups">
-              <label className="users__form--label">
-                Estatus
-                <select
-                  className="users__form--select"
-                  name="is_active"
-                  value={formData.is_active}
-                  onChange={handleFormChange}
-                >
-                  <option value={true}>Activo</option>
-                  <option value={false}>Inactivo</option>
-                </select>
-              </label>
-            </div>
-            <div className="users__form--btn-group">
-              <button type="submit" className="users__form--btn">
-                Guardar
-              </button>
-              <button type="submit" className="users__form--btn">
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </ModalBody>
-      </Modal>
-    </>
+          </div>
+          
+          <div className="users__form--groups">
+            <label className="users__form--label">
+              Estatus
+              <select
+                className="users__form--select"
+                name="status"
+                value={formData.status}
+                onChange={handleFormChange}
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </label>
+          </div>
+          
+          <div className="users__form--btn-group">
+            <button type="submit" className="users__form--btn">
+              Guardar
+            </button>
+            <button 
+              type="button"
+              className="users__form--btn"
+              onClick={() => close(false)}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </ModalBody>
+    </Modal>
   );
 };
 

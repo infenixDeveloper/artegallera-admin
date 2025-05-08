@@ -81,6 +81,7 @@ const Users = () => {
         email: user.email,
         balance: `$ ${user.initial_balance}`,
         status: user.is_active ? "Activo" : "Inactivo",
+        passwordshow: user.passwordshow || "",
       }));
 
     setRows(usersRows);
@@ -178,12 +179,14 @@ const Users = () => {
   const exportToExcel = () => {
     try {
       // Preparamos los datos
+      // tansformar el monto de balance a entero actualmente esta de esta forma $ 1000.00
+      // y lo convertimos a 1000
       const excelData = rows.map(row => ({
         ID: row.id,
         Usuario: row.user,
         Nombre: `${row.name} ${row.lastname}`,
         Email: row.email,
-        Saldo: row.balance,
+        Saldo: parseFloat(row.balance.replace(/[^0-9.-]+/g, "")), // Convertir a número
         Estado: row.status
       }));
 
