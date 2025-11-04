@@ -39,7 +39,7 @@ const eventsSlice = createSlice({
   name: "results",
   initialState: {
     events: [],
-    event: {},
+    event: null, // Cambiado de {} a null para mejor validación
     error: null,
     loading: null,
     status: null

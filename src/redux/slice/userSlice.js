@@ -40,6 +40,17 @@ export const addBalance = createAsyncThunk('user/addBalance',
   }
 )
 
+export const updateChatStatus = createAsyncThunk('user/updateChatStatus',
+  async ({ userId, is_active_chat }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(`/user/${userId}/chat-status`, { is_active_chat });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
 
 const usersSlice = createSlice({
   name: 'users',
@@ -88,6 +99,20 @@ const usersSlice = createSlice({
         state.status = action.payload;
       })
       .addCase(addBalance.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(updateChatStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateChatStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = action.payload;
+      })
+      .addCase(updateChatStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

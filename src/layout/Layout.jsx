@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import Users from "@pages/Users/Users";
 import Sidebar from "@components/Sidebar/Sidebar";
+import Chat from "@components/Chat/Chat";
 
 import "./Layout.css";
 import Content from "@components/Content/Content";
@@ -17,6 +18,7 @@ const Layout = () => {
           <Content />
         </div>
       </div>
+      <Chat />
     </>
   );
 };

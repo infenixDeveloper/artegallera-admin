@@ -40,6 +40,19 @@ const Login = () => {
 
       if (response?.data?.success && response?.data?.data?.token) {
         Cookies.set("authToken", response?.data?.data?.token);
+        
+        // Guardar datos del usuario en cookie para uso en componentes (como Chat)
+        if (response.data.data.user) {
+          Cookies.set("data", JSON.stringify({
+            id: response.data.data.user.id,
+            username: response.data.data.user.username,
+            email: response.data.data.user.email,
+            first_name: response.data.data.user.first_name,
+            last_name: response.data.data.user.last_name,
+            is_admin: response.data.data.user.is_admin,
+            is_active_chat: response.data.data.user.is_active_chat !== undefined ? response.data.data.user.is_active_chat : true
+          }));
+        }
 
         if (Cookies.get("authToken") && response.data.data.user.is_admin) {
           navigate("/admin");

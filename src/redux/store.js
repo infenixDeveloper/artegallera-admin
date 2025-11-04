@@ -6,6 +6,7 @@ import eventsReducer from "./slice/eventsSlice"
 import winnersReducer from "./slice/winnersSlice"
 import roundsReducer from "./slice/roundsSlice"
 import videosReducer from "./slice/videosSlice"
+import chatReducer from "./slice/chatSlice"
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     winners: winnersReducer,
     rounds: roundsReducer,
     videos: videosReducer,
+    chat: chatReducer,
   }
 })
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 // Redux
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "@redux/slice/userSlice";
+import { fetchUsers, updateChatStatus } from "@redux/slice/userSlice";
 
 // Components
 import Button from "@components/Button/Button";
@@ -26,6 +26,8 @@ import {
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import ChatIcon from "@mui/icons-material/Chat";
+import BlockIcon from "@mui/icons-material/Block";
 import WithdrawBalance from "./WithdrawBalance";
 import ChangePassword from "./ChangePassword";
 import { useRef } from "react";
@@ -81,6 +83,8 @@ const Users = () => {
         email: user.email,
         balance: `$ ${user.initial_balance}`,
         status: user.is_active ? "Activo" : "Inactivo",
+        chatStatus: user.is_active_chat ? "Activo" : "Bloqueado",
+        is_active_chat: user.is_active_chat,
         passwordshow: user.passwordshow || "",
       }));
 
@@ -136,6 +140,18 @@ const Users = () => {
     }
   };
 
+  const handleToggleChatStatus = async (userId, currentStatus) => {
+    try {
+      await dispatch(updateChatStatus({ 
+        userId, 
+        is_active_chat: !currentStatus 
+      })).unwrap();
+      dispatch(fetchUsers());
+    } catch (error) {
+      console.error("Error al actualizar estado del chat:", error);
+    }
+  };
+
   const columns = [
     { field: "id", header: "id" },
     {
@@ -159,6 +175,7 @@ const Users = () => {
     },
     { field: "balance", header: "saldo" },
     { field: "status", header: "estado" },
+    { field: "chatStatus", header: "chat" },
     {
       field: "actions",
       header: "acción",
@@ -187,7 +204,8 @@ const Users = () => {
         Nombre: `${row.name} ${row.lastname}`,
         Email: row.email,
         Saldo: parseFloat(row.balance.replace(/[^0-9.-]+/g, "")), // Convertir a número
-        Estado: row.status
+        Estado: row.status,
+        Chat: row.chatStatus
       }));
 
       if (excelData.length === 0) {
@@ -205,7 +223,8 @@ const Users = () => {
         { wch: 20 }, // Nombre
         { wch: 25 }, // Email
         { wch: 10 }, // Saldo
-        { wch: 10 }  // Estado
+        { wch: 10 }, // Estado
+        { wch: 10 }  // Chat
       ];
       ws['!cols'] = wscols;
       
@@ -360,6 +379,34 @@ const Users = () => {
               </ListItemIcon>
               <ListItemText>Eliminar</ListItemText>
             </MenuItem>
+
+            {selectedUser.is_active_chat ? (
+              <MenuItem
+                className="btn__options"
+                onClick={() => {
+                  handleToggleChatStatus(selectedUser.id, selectedUser.is_active_chat);
+                  setAnchorEl(null);
+                }}
+              >
+                <ListItemIcon>
+                  <BlockIcon fontSize="small" sx={{ color: "white" }} />
+                </ListItemIcon>
+                <ListItemText>Bloquear Chat</ListItemText>
+              </MenuItem>
+            ) : (
+              <MenuItem
+                className="btn__options"
+                onClick={() => {
+                  handleToggleChatStatus(selectedUser.id, selectedUser.is_active_chat);
+                  setAnchorEl(null);
+                }}
+              >
+                <ListItemIcon>
+                  <ChatIcon fontSize="small" sx={{ color: "white" }} />
+                </ListItemIcon>
+                <ListItemText>Activar Chat</ListItemText>
+              </MenuItem>
+            )}
           </MenuList>
         </Dropdown>
       </div>
