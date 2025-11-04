@@ -9,6 +9,7 @@ import SensorsIcon from "@mui/icons-material/Sensors";
 import PersonIcon from "@mui/icons-material/Person";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import ChatIcon from '@mui/icons-material/Chat';
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -40,6 +41,11 @@ const Sidebar = () => {
       name: "Videos",
       path: "/admin/videos",
       icon: <OndemandVideoIcon />,
+    },
+    {
+      name: "Evento - Chats",
+      path: "/admin/evento-chats",
+      icon: <ChatIcon />,
     },
   ];
 
