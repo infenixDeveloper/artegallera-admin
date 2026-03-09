@@ -6,6 +6,7 @@ const BetsResults = React.lazy(() => import("@pages/BetsResults/BetsResults"));
 const Videos = React.lazy(() => import("@pages/Videos/Videos"));
 const Transactions = React.lazy(() => import("@pages/Transactions/Transaction"));
 const EventChats = React.lazy(() => import("@pages/EventChats/EventChats"));
+const Eventos = React.lazy(() => import("@pages/Eventos/Eventos"));
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: "/admin/evento-chats",
     name: "Evento - Chats",
     element: EventChats,
+  },
+  {
+    path: "/admin/eventos",
+    name: "Eventos",
+    element: Eventos,
   },
 ];
 

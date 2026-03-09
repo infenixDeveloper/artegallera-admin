@@ -10,6 +10,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ChatIcon from '@mui/icons-material/Chat';
+import EventIcon from "@mui/icons-material/Event";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -46,6 +47,11 @@ const Sidebar = () => {
       name: "Evento - Chats",
       path: "/admin/evento-chats",
       icon: <ChatIcon />,
+    },
+    {
+      name: "Eventos",
+      path: "/admin/eventos",
+      icon: <EventIcon />,
     },
   ];
 

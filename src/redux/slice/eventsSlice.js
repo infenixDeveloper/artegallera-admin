@@ -35,6 +35,29 @@ export const getLastEvent = createAsyncThunk("api/events", async () => {
   }
 });
 
+export const updateEventSpectators = createAsyncThunk(
+  "events/updateSpectators",
+  async ({ id, base_viewers }, thunkAPI) => {
+    try {
+      const token = Cookies.get("authToken");
+      const response = await api.patch(
+        `/events/${id}/spectators`,
+        { base_viewers },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      thunkAPI.dispatch(getEvents());
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
+
 const eventsSlice = createSlice({
   name: "results",
   initialState: {
