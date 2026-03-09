@@ -64,7 +64,7 @@ const Transactions = () => {
   // Función para obtener los eventos
   const fetchEvents = async (userId) => {
     try {
-      const response = await fetch(`${apiUrl}/betting/report/event/${userId}`);
+      const response = await fetch(`${apiUrl}/events`);
       const data = await response.json();
       if (data.success) {
         setEvents(data.data);
@@ -83,13 +83,14 @@ const Transactions = () => {
         `${apiUrl}/betting/report/car/${userId}/${eventId}`
       );
       const data = await response.json();
-      if (data.success) {
-        setRounds(data.data); // Guardar las rondas
+      if (data.success && data.data?.length > 0) {
+        setRounds(data.data);
       } else {
-        console.error("No se encontraron transacciones");
+        setRounds([]); // Sin movimientos o respuesta sin datos
       }
     } catch (error) {
       console.error("Error al obtener transacciones", error);
+      setRounds([]);
     }
   };
 
@@ -347,34 +348,48 @@ const Transactions = () => {
             </Select>
           </FormControl>
 
-          <List>
-            {rounds.map((round) => (
-              <div key={round.round}>
-                <Typography variant="h6">{`Pelea ${round.round}`}</Typography>
-                {console.log(round)}
+          {selectedEvent && rounds.length === 0 ? (
+            <Box
+              sx={{
+                py: 4,
+                px: 2,
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.9)",
+              }}
+            >
+              <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
+                No tiene movimientos en ese evento.
+              </Typography>
+            </Box>
+          ) : (
+            <List>
+              {rounds.map((round) => (
+                <div key={round.round}>
+                  <Typography variant="h6">{`Pelea ${round.round}`}</Typography>
 
-                <Table
-                  columns={[
-                    { field: "id", header: "ID" },
-                    {
-                      field: "user",
-                      header: "Usuario",
-                      cell: (row) => row.user.username,
-                    },
-                    {
-                      field: "type_transaction",
-                      header: "Tipo de Transacción",
-                    },
-                    { field: "previous_balance", header: "Saldo Anterior" },
-                    { field: "amount", header: "Monto" },
-                    { field: "current_balance", header: "Saldo Actual" },
-                    { field: "team", header: "Equipo" },
-                  ]}
-                  rows={round.transactions} // Usamos las transacciones
-                />
-              </div>
-            ))}
-          </List>
+                  <Table
+                    columns={[
+                      { field: "id", header: "ID" },
+                      {
+                        field: "user",
+                        header: "Usuario",
+                        cell: (row) => row.user?.username ?? "-",
+                      },
+                      {
+                        field: "type_transaction",
+                        header: "Tipo de Transacción",
+                      },
+                      { field: "previous_balance", header: "Saldo Anterior" },
+                      { field: "amount", header: "Monto" },
+                      { field: "current_balance", header: "Saldo Actual" },
+                      { field: "team", header: "Equipo" },
+                    ]}
+                    rows={round.transactions}
+                  />
+                </div>
+              ))}
+            </List>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseModal} color="primary">
