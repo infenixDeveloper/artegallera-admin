@@ -73,52 +73,48 @@ const DynamicTabs = ({ idEvent }) => {
         response.data.id === selectedRoundId &&
           setIsBettingActive(response.data.is_betting_active);
 
+        if (!selectedRoundId) return;
+        const onlyAccepted = response.data.is_betting_active === false;
         setTimeout(() => {
           socket.current.emit(
             "getBetStats",
-            { id_event: idEvent, team: "red", id_round: selectedRoundId },
+            { id_event: idEvent, team: "red", id_round: selectedRoundId, onlyAccepted },
             (response) => {
-              setRedBet(response.totalAmount);
+              setRedBet(response?.totalAmount ?? 0);
             }
           );
 
           socket.current.emit(
             "getBetStats",
-            { id_event: idEvent, team: "green", id_round: selectedRoundId },
+            { id_event: idEvent, team: "green", id_round: selectedRoundId, onlyAccepted },
             (response) => {
-              setGreenBet(response.totalAmount);
+              setGreenBet(response?.totalAmount ?? 0);
             }
           );
         }, 1000);
       }
     });
-  }, [isBettingActive, redBet, greenBet]);
+  }, [isBettingActive, redBet, greenBet, selectedRoundId]);
 
   useEffect(() => {
+    if (!selectedRoundId) return;
+    const onlyAccepted = isBettingActive === false;
     socket.current.emit(
       "getBetStats",
-      { id_event: idEvent, team: "red", id_round: selectedRoundId },
-
+      { id_event: idEvent, team: "red", id_round: selectedRoundId, onlyAccepted },
       (response) => {
-        setRedBet(response.totalAmount);
+        setRedBet(response?.totalAmount ?? 0);
       }
     );
 
     socket.current.emit(
       "getBetStats",
-      { id_event: idEvent, team: "green", id_round: selectedRoundId },
+      { id_event: idEvent, team: "green", id_round: selectedRoundId, onlyAccepted },
       (response) => {
-        setGreenBet(response.totalAmount);
+        setGreenBet(response?.totalAmount ?? 0);
       }
     );
-
-    // socket.current.on("isBettingActive", (response) => {
-    //   if (response.success) {
-    //     response.data.id === selectedRoundId &&
-    //       setIsBettingActive(response.data.is_betting_active);
-    //   }
-    // });
-  }, [event, redBet, greenBet, selectedRoundId]);
+  }, [event, idEvent, isBettingActive, selectedRoundId]);
 
   useEffect(() => {
     socket.current.on("newBet", (newBet) => {
