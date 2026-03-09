@@ -12,17 +12,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Autocomplete,
   List,
   Button,
 } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import { io } from "socket.io-client";
 import { useEffect, useRef, useState } from "react";
-const apiUrl = import.meta.env.VITE_API_URL_PROD;
+import api from "@services/api";
+
 const Transactions = () => {
   const socket = useRef(null);
 
@@ -52,6 +50,18 @@ const Transactions = () => {
   const [events, setEvents] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null); // Estado para el usuario seleccionado
 
+  // Formatear fecha de evento para mostrar en el selector
+  const formatEventDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   // Función para obtener la fecha actual en formato yyyy-mm-dd
   function getCurrentDate() {
     const today = new Date();
@@ -61,32 +71,37 @@ const Transactions = () => {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Función para obtener los eventos
-  const fetchEvents = async (userId) => {
+  // Función para obtener los eventos (usa api para entorno local con token)
+  const fetchEvents = async () => {
     try {
-      const response = await fetch(`${apiUrl}/events`);
-      const data = await response.json();
-      if (data.success) {
+      const response = await api.get("/events");
+      const data = response.data;
+      if (data.success && data.data) {
         setEvents(data.data);
       } else {
-        console.error("No se encontraron eventos");
+        setEvents([]);
       }
     } catch (error) {
       console.error("Error al obtener eventos", error);
+      setEvents([]);
     }
   };
 
-  // Función para obtener las transacciones de las rondas
+  // Función para obtener las transacciones de las rondas (usa api para entorno local con token)
   const fetchRounds = async (userId, eventId) => {
+    if (!userId || eventId === "" || eventId == null) {
+      setRounds([]);
+      return;
+    }
     try {
-      const response = await fetch(
-        `${apiUrl}/betting/report/car/${userId}/${eventId}`
+      const response = await api.get(
+        `/betting/report/car/${userId}/${eventId}`
       );
-      const data = await response.json();
+      const data = response.data;
       if (data.success && data.data?.length > 0) {
         setRounds(data.data);
       } else {
-        setRounds([]); // Sin movimientos o respuesta sin datos
+        setRounds([]);
       }
     } catch (error) {
       console.error("Error al obtener transacciones", error);
@@ -100,7 +115,7 @@ const Transactions = () => {
     setSelectedEvent(""); // Limpiar evento seleccionado
     setRounds([]); // Limpiar rondas anteriores
     setSelectedUser(user); // Guardamos el usuario seleccionado
-    fetchEvents(user.id); // Obtener eventos al abrir el modal
+    fetchEvents(); // Obtener eventos al abrir el modal
   };
 
   const handleCloseModal = () => {
@@ -109,10 +124,12 @@ const Transactions = () => {
     setRounds([]);
   };
 
-  const handleEventChange = async (e) => {
-    const eventId = e.target.value;
+  const handleEventChange = async (event, newValue) => {
+    const eventId = newValue?.id ?? "";
     setSelectedEvent(eventId);
-    fetchRounds(selectedUser.id, eventId); // Ahora usamos el id del usuario seleccionado
+    if (!selectedUser?.id) return;
+    if (eventId) fetchRounds(selectedUser.id, eventId);
+    else setRounds([]);
   };
 
   // Función para descargar el PDF (Reporte de Usuario y Evento)
@@ -122,58 +139,41 @@ const Transactions = () => {
       return;
     }
 
-    const url = `${apiUrl}/betting/pdf/listAmountTransactions/${selectedUser.id}/${selectedEvent}`;
-
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/pdf",
-        },
-      });
-      console.log({ selectedUser });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `${selectedUser.user}.pdf`;
-        link.click();
-      } else {
-        console.error("Error al obtener el PDF");
-      }
+      const response = await api.get(
+        `/betting/pdf/listAmountTransactions/${selectedUser.id}/${selectedEvent}`,
+        { responseType: "blob" }
+      );
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${selectedUser.user}.pdf`;
+      link.click();
+      URL.revokeObjectURL(link.href);
     } catch (error) {
-      console.error("Hubo un error al realizar la solicitud", error);
+      console.error("Error al obtener el PDF", error);
     }
   };
 
   // Función para descargar el reporte en Excel (por rango de fechas)
   const handleDownloadExcelReport = async () => {
-    if (!isValidDate) {
-      return;
-    }
-
-    const url = `${apiUrl}/betting/report/range?startDate=${startDate}&endDate=${endDate}`;
+    if (!isValidDate) return;
 
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.get("/betting/report/range", {
+        params: { startDate, endDate },
+        responseType: "blob",
       });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "reporte_transacciones.xlsx";
-        link.click();
-      } else {
-        console.error("Error al obtener el reporte Excel");
-      }
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "reporte_transacciones.xlsx";
+      link.click();
+      URL.revokeObjectURL(link.href);
     } catch (error) {
-      console.error("Hubo un error al realizar la solicitud", error);
+      console.error("Error al obtener el reporte Excel", error);
     }
   };
 
@@ -318,35 +318,69 @@ const Transactions = () => {
       >
         <DialogTitle>Movimientos del Jugador</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth>
-            <InputLabel>Evento</InputLabel>
-            <Select
-              value={selectedEvent}
-              onChange={handleEventChange}
-              label="Evento"
-              sx={{
-                backgroundColor: "white", // Fondo blanco para el Select
-                color: "black", // Color de texto dentro del Select
-                "& .MuiSelect-icon": {
-                  color: "black", // Color del ícono de la flecha
-                },
-              }}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 200, // Máxima altura del menú
-                    overflowY: "auto", // Agregar scroll si las opciones son muchas
+          <Autocomplete
+            value={events.find((e) => e.id === selectedEvent) ?? null}
+            onChange={handleEventChange}
+            options={events}
+            getOptionLabel={(option) =>
+              `${option.name ?? ""} — ${formatEventDate(option.date)}`
+            }
+            isOptionEqualToValue={(option, value) => option?.id === value?.id}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Buscar evento (nombre o fecha)"
+                placeholder="Escribe para filtrar..."
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.id}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                  <Typography variant="body1" fontWeight={600} sx={{ color: "#1a1a1a" }}>
+                    {option.name}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: "#555" }}>
+                    {formatEventDate(option.date)}
+                    {option.location ? ` · ${option.location}` : ""}
+                  </Typography>
+                </Box>
+              </li>
+            )}
+            noOptionsText="No hay eventos"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "white",
+                "& fieldset": { borderColor: "rgba(255,255,255,0.3)" },
+                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.5)" },
+                "&.Mui-focused fieldset": { borderColor: "white" },
+              },
+              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "white" },
+              "& .MuiAutocomplete-input": { color: "black" },
+              "& .MuiAutocomplete-popupIndicator": { color: "black" },
+              "& .MuiAutocomplete-clearIndicator": { color: "black" },
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  backgroundColor: "#fff",
+                  color: "#1a1a1a",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+                  "& .MuiAutocomplete-listbox": {
+                    backgroundColor: "#fff",
+                    color: "#1a1a1a",
+                    "& .MuiAutocomplete-option": {
+                      "&:hover": { backgroundColor: "#f0f0f0" },
+                      "&[aria-selected='true']": { backgroundColor: "#e3f2fd" },
+                    },
                   },
                 },
-              }}
-            >
-              {events.map((event) => (
-                <MenuItem key={event.id} value={event.id}>
-                  {event.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              },
+            }}
+            ListboxProps={{
+              sx: { maxHeight: 280, backgroundColor: "#fff", color: "#1a1a1a" },
+            }}
+          />
 
           {selectedEvent && rounds.length === 0 ? (
             <Box
